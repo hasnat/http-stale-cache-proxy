@@ -23,10 +23,28 @@ httpStaleCacheProxy.createServer({
   target: {
     host: 'example.com',
     port: 80,
-  },
+  }
 }).listen(8000);
 ```
 
+Target property can be a function where first parameter is request
+
+```js
+var httpStaleCacheProxy = require('http-stale-cache-proxy');
+var url = require('url');
+
+httpStaleCacheProxy.createServer({
+  changeOrigin: true,
+  noRefresh: false,
+  target: function(req) {
+    var parsedUrl = url.parse(req.url);
+    return {
+      host: parsedUrl.hostname,
+      port: parsedUrl.port || 80
+    }
+  }
+}).listen(8000);
+```
 ## Options
 
 * noRefresh : if true, proxy will prevent himself from getting an updated version of the request and serve the last cached response directly
