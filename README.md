@@ -45,10 +45,27 @@ httpStaleCacheProxy.createServer({
   }
 }).listen(8000);
 ```
+
+Request can be made using a custom agent e.g.
+
+```js
+var httpStaleCacheProxy = require('http-stale-cache-proxy');
+var needle = require('needle');
+
+httpStaleCacheProxy.createServer({
+  changeOrigin: true,
+  noRefresh: false,
+  requestAgent: function(request, response, options) {
+    needle('get', request.url)
+        .then(function(res) { res.pipe(response); })
+        .catch(function(res) { res.writeHead(500, "Server Error"); res.end(); });        
+  }
+}).listen(8000);
+```
 ## Options
 
 * noRefresh : if true, proxy will prevent himself from getting an updated version of the request and serve the last cached response directly
-
+* requestAgent: custom agent to do request instead of using proxyRequest
 
 ## Why another proxy?
 
